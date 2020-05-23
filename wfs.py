@@ -13,7 +13,7 @@ from PyQt5.QtGui import (
     QStandardItem,
     QKeySequence,
 )
-from PyQt5.QtCore import Qt, QDir
+from PyQt5.QtCore import Qt, QDir, QItemSelectionModel
 from main_ui import Ui_MainWindow
 import sys
 import pathlib
@@ -41,6 +41,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self._shortcut_list = []
         self.undo_list = []
         self.delete_folder = str(pathlib.Path(find_data_file("delete")))
+        self.current_file_folder = ""
 
         self.model = QFileSystemModel()
         # self.model.setFilter(QDir.Files)
@@ -74,12 +75,31 @@ class MainWindow(QtWidgets.QMainWindow):
         self.ui.actionLoad_Preset.triggered.connect(self.load_preset_cb)
         self.ui.actionClear_Delete_Folder.triggered.connect(self.clear_folder)
         self.ui.unmoveBtn.clicked.connect(self.undo_cb)
+        self.ui.checkDeletedBtn.clicked.connect(self.checkDeletedBtn_cb)
+
+    def checkDeletedBtn_cb(self):
+        ind = self.ui.treeView.currentIndex()
+        file_path = self.model.filePath(ind)
+        try:
+            file_path = pathlib.Path(file_path).parents[0].resolve()
+        except IndexError:
+            return
+
+        if file_path != pathlib.Path(self.delete_folder).resolve():
+            self.model.setRootPath(self.delete_folder)
+            self.ui.treeView.setRootIndex(self.model.index(self.delete_folder))
+            return
+        else:
+            self.model.setRootPath(self.current_file_folder)
+            self.ui.treeView.setRootIndex(self.model.index(self.current_file_folder))
 
     def clear_folder(self):
         p = pathlib.Path(self.delete_folder)
         for filename in p.glob("*"):
             send2trash(str(filename))
-        QtWidgets.QMessageBox.about(self, "Delete folder cleared", "Delete folder cleared")
+        QtWidgets.QMessageBox.about(
+            self, "Delete folder cleared", "Delete folder cleared"
+        )
 
     def undo_cb(self):
         try:
@@ -91,7 +111,7 @@ class MainWindow(QtWidgets.QMainWindow):
         dest_path = pathlib.Path(dest_path, pic_path.name)
         pic_path, dest_path = dest_path, pic_path
 
-        print(pic_path.parents[0], dest_path)
+        # print(pic_path.parents[0], dest_path)
         try:
             shutil.move(pic_path, str(dest_path))
         except shutil.Error:
@@ -316,6 +336,17 @@ class MainWindow(QtWidgets.QMainWindow):
     def updateImageLabel(self):
         ind = self.ui.treeView.currentIndex()
         file_path = self.model.filePath(ind)
+
+        # keep track of current folder for check button return location
+        path_to_current_folder = pathlib.Path(file_path).parents[0]
+        # print(f"{path_to_current_folder=}")
+        print(path_to_current_folder.resolve())
+        print(pathlib.Path(self.delete_folder).resolve())
+        if str(path_to_current_folder.resolve()) != str(
+            pathlib.Path(self.delete_folder).resolve()
+        ):
+            self.current_file_folder = str(path_to_current_folder)
+
         pixmap = QtGui.QPixmap(file_path)
         pixmap = pixmap.scaled(
             self.ui.imageLabel.width(),
