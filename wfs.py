@@ -22,6 +22,7 @@ import shutil
 from send2trash import send2trash
 from functools import partial
 import json
+import os
 
 
 class MainWindow(QtWidgets.QMainWindow):
@@ -32,13 +33,14 @@ class MainWindow(QtWidgets.QMainWindow):
         self.ui.setupUi(self)
         self.setWindowTitle("Weeb File Sort")
         app_icon = QtGui.QIcon()
-        app_icon.addFile("waifu_sort.png", QtCore.QSize(256, 256))
+        app_icon.addFile("./icons/waifu_sort.png", QtCore.QSize(256, 256))
         self.setWindowIcon(app_icon)
 
         self.path_hotkey_dict = {}
         self.hotkey_path_dict = {}
         self._shortcut_list = []
         self.undo_list = []
+        self.delete_folder = str(pathlib.Path(find_data_file("delete")))
 
         self.model = QFileSystemModel()
         self.model.setFilter(QDir.Files)
@@ -59,7 +61,9 @@ class MainWindow(QtWidgets.QMainWindow):
         self.ui.addDest.clicked.connect(self.add_dest_to_table)
 
         self.delShortcut = QShortcut(QKeySequence("Delete"), self)
-        self.delShortcut.activated.connect(self.delete_cb)
+        self.delShortcut.activated.connect(
+            partial(self.move_cb, None, self.delete_folder)
+        )
 
         self.undoShortcut = QShortcut(QKeySequence("Ctrl+Z"), self)
         self.undoShortcut.activated.connect(self.undo_cb)
@@ -68,7 +72,13 @@ class MainWindow(QtWidgets.QMainWindow):
         self.ui.actionAbout.triggered.connect(self.showAboutDialog)
         self.ui.actionSave_Preset.triggered.connect(self.save_preset_cb)
         self.ui.actionLoad_Preset.triggered.connect(self.load_preset_cb)
+        self.ui.actionClear_Delete_Folder.triggered.connect(self.clear_folder)
         self.ui.unmoveBtn.clicked.connect(self.undo_cb)
+
+    def clear_folder(self):
+        p = pathlib.Path(self.delete_folder)
+        for filename in p.glob("*"):
+            send2trash(str(filename))
 
     def undo_cb(self):
         try:
@@ -85,6 +95,8 @@ class MainWindow(QtWidgets.QMainWindow):
             shutil.move(pic_path, str(dest_path))
         except shutil.Error:
             QtWidgets.QMessageBox.warning(self, "Warning", "File already exists")
+        except AttributeError:
+            return
         del self.undo_list[-1]
 
     def load_preset_cb(self):
@@ -146,7 +158,7 @@ class MainWindow(QtWidgets.QMainWindow):
             self.add_dest_to_table(dest_path=path.name, hotkey=hotkey)
             self.ui.tableWidget.item(row_counter, 0).setToolTip(str(path))
             shortcut = QShortcut(QKeySequence(hotkey), self)
-            shortcut.activated.connect(lambda: self.send_cb(input_path=path))
+            shortcut.activated.connect(lambda: self.move_cb(input_path=path))
             self._shortcut_list.append(shortcut)
             row_counter += 1
 
@@ -188,11 +200,6 @@ class MainWindow(QtWidgets.QMainWindow):
                 print("DELETED hotkey: ", name)
                 shortcut.setEnabled(False)
 
-    def delete_cb(self):
-        ind = self.ui.listView.currentIndex()
-        file_path = self.model.filePath(ind)
-        p = pathlib.Path(file_path)
-        send2trash(str(p))
 
     def add_dest_to_table(self, dest_path=None, hotkey=None):
         self.ui.tableWidget.setEditTriggers(
@@ -232,11 +239,11 @@ class MainWindow(QtWidgets.QMainWindow):
         # add send button
         send_btn = QtWidgets.QPushButton("Send")
         send_btn.clicked.connect(
-            lambda *args, row_ind=row_counter: self.send_cb(row=row_ind)
+            lambda *args, row_ind=row_counter: self.move_cb(row=row_ind)
         )
         self.ui.tableWidget.setCellWidget(row_counter, 3, send_btn)
 
-    def send_cb(self, row=None, input_path=None):
+    def move_cb(self, row=None, input_path=None):
         ind = self.ui.listView.currentIndex()
         pic_path = self.model.filePath(ind)
         # pic_path = pathlib.Path(pic_path)
@@ -248,6 +255,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 shutil.move(pic_path, str(dest_path))
             except shutil.Error:
                 QtWidgets.QMessageBox.warning(self, "Warning", "File already exists")
+                return
             self.undo_list.append((pic_path, str(dest_path)))
         else:
             # notify user
@@ -279,7 +287,7 @@ class MainWindow(QtWidgets.QMainWindow):
         # self._shortcut_list.append(shortcut.key().toString())
         self._shortcut_list.append(shortcut)
         dest_path = self.hotkey_path_dict[hotkey]
-        shortcut.activated.connect(lambda: self.send_cb(input_path=dest_path))
+        shortcut.activated.connect(lambda: self.move_cb(input_path=dest_path))
         if len(hotkey) > 0:
             hotkey_line.clearFocus()
 
@@ -325,6 +333,20 @@ def load_json(inputNameAndExt):
     with open(inputNameAndExt, "r") as fp:
         data = json.load(fp)
     return data
+
+
+def find_data_file(folder, filename=None):
+    if getattr(sys, "frozen", False):
+        # The application is frozen
+        datadir = os.path.dirname(sys.executable)
+    else:
+        # The application is not frozen
+        datadir = os.path.dirname(__file__)
+    # The following line has been changed to match where you store your data files:
+    if filename:
+        return os.path.join(datadir, folder, filename)
+    else:
+        return os.path.join(datadir, folder)
 
 
 if __name__ == "__main__":
