@@ -163,7 +163,7 @@ class MainWindow(QtWidgets.QMainWindow):
             "<h1>Waifu File Sort</h1>"
             "&#8291;"
             "</center>"
-            "<p>Version 1.1.0<br/>"
+            "<p>Version 1.4.0<br/>"
         )
         QtWidgets.QMessageBox.about(self, "About Waifu File Sort", text)
 
