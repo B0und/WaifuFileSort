@@ -43,17 +43,17 @@ class MainWindow(QtWidgets.QMainWindow):
         self.delete_folder = str(pathlib.Path(find_data_file("delete")))
 
         self.model = QFileSystemModel()
-        self.model.setFilter(QDir.Files)
+        # self.model.setFilter(QDir.Files)
         self.model.setNameFilters(["*.jpg", "*.png", "*.webp", ".JPEG", ".PNG"])
         self.model.setNameFilterDisables(False)
-        self.ui.listView.setModel(self.model)
-        # self.ui.listView.setRootIndex(self.model.index(p))
-        self.ui.listView.setSelectionMode(QAbstractItemView.SingleSelection)
+        self.ui.treeView.setModel(self.model)
+        # self.ui.treeView.setRootIndex(self.model.index(p))
+        self.ui.treeView.setSelectionMode(QAbstractItemView.SingleSelection)
         self.ui.tableWidget.setSelectionMode(
             QtWidgets.QAbstractItemView.SingleSelection
         )
 
-        self.ui.listView.selectionModel().selectionChanged.connect(
+        self.ui.treeView.selectionModel().selectionChanged.connect(
             self.updateImageLabel
         )
 
@@ -79,6 +79,7 @@ class MainWindow(QtWidgets.QMainWindow):
         p = pathlib.Path(self.delete_folder)
         for filename in p.glob("*"):
             send2trash(str(filename))
+        QtWidgets.QMessageBox.about(self, "Delete folder cleared", "Delete folder cleared")
 
     def undo_cb(self):
         try:
@@ -96,6 +97,8 @@ class MainWindow(QtWidgets.QMainWindow):
         except shutil.Error:
             QtWidgets.QMessageBox.warning(self, "Warning", "File already exists")
         except AttributeError:
+            return
+        except FileNotFoundError:
             return
         del self.undo_list[-1]
 
@@ -200,7 +203,6 @@ class MainWindow(QtWidgets.QMainWindow):
                 print("DELETED hotkey: ", name)
                 shortcut.setEnabled(False)
 
-
     def add_dest_to_table(self, dest_path=None, hotkey=None):
         self.ui.tableWidget.setEditTriggers(
             self.ui.tableWidget.NoEditTriggers
@@ -244,7 +246,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.ui.tableWidget.setCellWidget(row_counter, 3, send_btn)
 
     def move_cb(self, row=None, input_path=None):
-        ind = self.ui.listView.currentIndex()
+        ind = self.ui.treeView.currentIndex()
         pic_path = self.model.filePath(ind)
         # pic_path = pathlib.Path(pic_path)
         dest_path = input_path or self.ui.tableWidget.item(row, 0).toolTip()
@@ -275,7 +277,7 @@ class MainWindow(QtWidgets.QMainWindow):
             return
 
         # check if hotkey line edit is empty and delete hotkey
-        if len(hotkey) == 0:
+        if len(hotkey) == 0 and path != "":
             hotkey_to_del = self.path_hotkey_dict[path]
             self.delete_hotkey(hotkey_to_del)
 
@@ -309,10 +311,10 @@ class MainWindow(QtWidgets.QMainWindow):
         folder_path = dialog.getExistingDirectory(None, "Select Folder")
         if folder_path:
             self.model.setRootPath(folder_path)
-            self.ui.listView.setRootIndex(self.model.index(folder_path))
+            self.ui.treeView.setRootIndex(self.model.index(folder_path))
 
     def updateImageLabel(self):
-        ind = self.ui.listView.currentIndex()
+        ind = self.ui.treeView.currentIndex()
         file_path = self.model.filePath(ind)
         pixmap = QtGui.QPixmap(file_path)
         pixmap = pixmap.scaled(
