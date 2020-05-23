@@ -68,6 +68,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.ui.actionAbout.triggered.connect(self.showAboutDialog)
         self.ui.actionSave_Preset.triggered.connect(self.save_preset_cb)
         self.ui.actionLoad_Preset.triggered.connect(self.load_preset_cb)
+        self.ui.unmoveBtn.clicked.connect(self.undo_cb)
 
     def undo_cb(self):
         try:
