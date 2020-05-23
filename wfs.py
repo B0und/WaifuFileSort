@@ -24,7 +24,6 @@ from functools import partial
 import json
 
 
-
 class MainWindow(QtWidgets.QMainWindow):
     def __init__(self):
         super(MainWindow, self).__init__()
@@ -70,10 +69,22 @@ class MainWindow(QtWidgets.QMainWindow):
         self.ui.actionSave_Preset.triggered.connect(self.save_preset_cb)
         self.ui.actionLoad_Preset.triggered.connect(self.load_preset_cb)
 
-    def 
-
     def undo_cb(self):
-        print("undoing")
+        try:
+            last_operation = self.undo_list[-1]
+        except IndexError:
+            return
+        pic_path, dest_path = last_operation
+        pic_path = pathlib.Path(pic_path)
+        dest_path = pathlib.Path(dest_path, pic_path.name)
+        pic_path, dest_path = dest_path, pic_path
+
+        print(pic_path.parents[0], dest_path)
+        try:
+            shutil.move(pic_path, str(dest_path))
+        except shutil.Error:
+            QtWidgets.QMessageBox.warning(self, "Warning", "File already exists")
+        del self.undo_list[-1]
 
     def load_preset_cb(self):
         dialog = QFileDialog()
@@ -134,7 +145,7 @@ class MainWindow(QtWidgets.QMainWindow):
             self.add_dest_to_table(dest_path=path.name, hotkey=hotkey)
             self.ui.tableWidget.item(row_counter, 0).setToolTip(str(path))
             shortcut = QShortcut(QKeySequence(hotkey), self)
-            shortcut.activated.connect(lambda: self.send_from_hotkey(path))
+            shortcut.activated.connect(lambda: self.send_cb(input_path=path))
             self._shortcut_list.append(shortcut)
             row_counter += 1
 
@@ -220,36 +231,23 @@ class MainWindow(QtWidgets.QMainWindow):
         # add send button
         send_btn = QtWidgets.QPushButton("Send")
         send_btn.clicked.connect(
-            lambda *args, row_ind=row_counter: self.send_cb(row_ind)
+            lambda *args, row_ind=row_counter: self.send_cb(row=row_ind)
         )
         self.ui.tableWidget.setCellWidget(row_counter, 3, send_btn)
 
-    def send_cb(self, row):
+    def send_cb(self, row=None, input_path=None):
         ind = self.ui.listView.currentIndex()
         pic_path = self.model.filePath(ind)
         # pic_path = pathlib.Path(pic_path)
-        dest_path = self.ui.tableWidget.item(row, 0).toolTip()
+        dest_path = input_path or self.ui.tableWidget.item(row, 0).toolTip()
         dest_path = pathlib.Path(dest_path)
 
-        if dest_path.is_dir() and str(dest_path) != ".":
-            shutil.move(pic_path, str(dest_path))
-            self.undo_list.append((pic_path, str(dest_path)))
-        else:
-            # notify user
-            QtWidgets.QMessageBox.warning(
-                self, "Warning", "Destination path doesnt exist"
-            )
-
-    def send_from_hotkey(self, dest_path):
-        ind = self.ui.listView.currentIndex()
-        pic_path = self.model.filePath(ind)
-        dest_path = pathlib.Path(dest_path)
-        # print(dest_path)
         if dest_path.is_dir() and str(dest_path) != ".":
             try:
                 shutil.move(pic_path, str(dest_path))
             except shutil.Error:
                 QtWidgets.QMessageBox.warning(self, "Warning", "File already exists")
+            self.undo_list.append((pic_path, str(dest_path)))
         else:
             # notify user
             QtWidgets.QMessageBox.warning(
@@ -280,7 +278,7 @@ class MainWindow(QtWidgets.QMainWindow):
         # self._shortcut_list.append(shortcut.key().toString())
         self._shortcut_list.append(shortcut)
         dest_path = self.hotkey_path_dict[hotkey]
-        shortcut.activated.connect(lambda: self.send_from_hotkey(dest_path))
+        shortcut.activated.connect(lambda: self.send_cb(input_path=dest_path))
         if len(hotkey) > 0:
             hotkey_line.clearFocus()
 
