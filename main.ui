@@ -24,9 +24,69 @@ font-size: 10;
 	border-image: url(:/icons/icons/add.png);
 }
 
+
 #removeDest
 {
 	border-image: url(:/icons/icons/remove.png);
+}
+
+#removeDest:hover 
+{ 
+	border-image: url(:/icons/icons/Remove_button_highlighted_.png);
+}
+
+#removeDest:pressed
+{
+	border-image: url(:/icons/icons/remove_pressed.png);	
+}
+
+
+#browseBtn
+{
+	border-image: url(:/icons/icons/browse_buttonup.png);
+}
+
+#browseBtn:hover
+{
+	border-image: url(:/icons/icons/browse_button_highlight.png);
+}
+
+#browseBtn:pressed
+{
+	border-image: url(:/icons/icons/Browse_button_down.png);
+}
+
+
+
+#checkDeletedBtn
+{
+	border-image: url(:/icons/icons/Deleted_up.png);
+}
+
+#checkDeletedBtn:hover
+{
+	
+	border-image: url(:/icons/icons/Deleted_HIghlight.png);
+}
+
+#checkDeletedBtn:pressed
+{
+	border-image: url(:/icons/icons/Deleted_down.png);
+}
+
+#unmoveBtn
+{
+	border-image: url(:/icons/icons/Undo_up.png);
+}
+
+#unmoveBtn:hover
+{	
+	border-image: url(:/icons/icons/Undo_Highlight.png);
+}
+
+#unmoveBtn:pressed
+{
+	border-image: url(:/icons/icons/Undo_Down.png);
 }</string>
   </property>
   <widget class="QWidget" name="centralwidget">
@@ -194,7 +254,7 @@ font-size: 10;
            <string/>
           </property>
           <property name="text">
-           <string>Browse</string>
+           <string/>
           </property>
          </widget>
         </item>
@@ -219,7 +279,7 @@ font-size: 10;
            <string/>
           </property>
           <property name="text">
-           <string>Move Back</string>
+           <string/>
           </property>
          </widget>
         </item>
@@ -257,7 +317,7 @@ font-size: 10;
            <string/>
           </property>
           <property name="text">
-           <string>Deleted</string>
+           <string/>
           </property>
          </widget>
         </item>

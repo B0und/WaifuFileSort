@@ -17,7 +17,7 @@ executables = [Executable("wfs.py", base=base, icon="./icons/waifu_sort.ico",)]
 
 setup(
     name="WaifuFileSort",
-    version="1.2",
+    version="1.5",
     description="finalfinal",
     options=options,
     executables=executables,
