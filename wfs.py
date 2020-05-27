@@ -35,7 +35,10 @@ class MainWindow(QtWidgets.QMainWindow):
         app_icon = QtGui.QIcon()
         app_icon.addFile("./icons/waifu_sort.png", QtCore.QSize(256, 256))
         self.setWindowIcon(app_icon)
-        # self.setStyleSheet(pkg_resources.resource_stream(__name__, 'style_anime.css').read())
+
+        with open("orange.css") as f:
+            style_text = f.read()
+            self.setStyleSheet(style_text)
 
         self.path_hotkey_dict = {}
         self.hotkey_path_dict = {}
@@ -80,6 +83,18 @@ class MainWindow(QtWidgets.QMainWindow):
         self.ui.actionWeeb.triggered.connect(self.setWeebStyle)
         self.ui.actionDefault.triggered.connect(self.setDefaultStyle)
         self.ui.comboMode.currentTextChanged.connect(self.changeFileType)
+        self.ui.actionOrange.triggered.connect(self.setOrangeTheme)
+
+    def setOrangeTheme(self):
+        with open("orange.css") as f:
+            style_text = f.read()
+            self.setStyleSheet(style_text)
+
+        self.ui.addDest.setText("Add")
+        self.ui.removeDest.setText("Remove")
+        self.ui.browseBtn.setText("Browse")
+        self.ui.checkDeletedBtn.setText("Deleted")
+        self.ui.unmoveBtn.setText("Undo")
 
     def setWeebStyle(self):
         with open("style_anime.css") as f:
@@ -194,7 +209,7 @@ class MainWindow(QtWidgets.QMainWindow):
             "<h1>Waifu File Sort</h1>"
             "&#8291;"
             "</center>"
-            "<p>Version 1.4.0<br/>"
+            "<p>Version 1.5.0<br/>"
         )
         QtWidgets.QMessageBox.about(self, "About Waifu File Sort", text)
 
@@ -418,22 +433,23 @@ if __name__ == "__main__":
 
     app.setStyle("Fusion")
     # Now use a palette to switch to dark colors:
-    palette = QPalette()
-    palette.setColor(QPalette.Window, QColor(53, 53, 53))
-    palette.setColor(QPalette.WindowText, Qt.white)
-    palette.setColor(QPalette.Base, QColor(25, 25, 25))
-    palette.setColor(QPalette.AlternateBase, QColor(53, 53, 53))
-    palette.setColor(QPalette.ToolTipBase, Qt.white)
-    palette.setColor(QPalette.ToolTipText, Qt.white)
-    palette.setColor(QPalette.Text, Qt.white)
-    palette.setColor(QPalette.Button, QColor(53, 53, 53))
-    palette.setColor(QPalette.ButtonText, Qt.white)
-    palette.setColor(QPalette.BrightText, Qt.red)
-    palette.setColor(QPalette.Link, QColor(42, 130, 218))
-    palette.setColor(QPalette.Highlight, QColor(42, 130, 218))
-    palette.setColor(QPalette.HighlightedText, Qt.black)
-    app.setPalette(palette)
+    # palette = QPalette()
+    # palette.setColor(QPalette.Window, QColor(53, 53, 53))
+    # palette.setColor(QPalette.WindowText, Qt.white)
+    # palette.setColor(QPalette.Base, QColor(25, 25, 25))
+    # palette.setColor(QPalette.AlternateBase, QColor(53, 53, 53))
+    # palette.setColor(QPalette.ToolTipBase, Qt.white)
+    # palette.setColor(QPalette.ToolTipText, Qt.white)
+    # palette.setColor(QPalette.Text, Qt.white)
+    # palette.setColor(QPalette.Button, QColor(53, 53, 53))
+    # palette.setColor(QPalette.ButtonText, Qt.white)
+    # palette.setColor(QPalette.BrightText, Qt.red)
+    # palette.setColor(QPalette.Link, QColor(42, 130, 218))
+    # palette.setColor(QPalette.Highlight, QColor(42, 130, 218))
+    # palette.setColor(QPalette.HighlightedText, Qt.black)
+    # app.setPalette(palette)
 
     w = MainWindow()
+    # w.setWindowFlags(QtCore.Qt.FramelessWindowHint)
     w.show()
     sys.exit(app.exec_())

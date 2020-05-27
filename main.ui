@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1141</width>
-    <height>509</height>
+    <width>1056</width>
+    <height>538</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -17,7 +17,7 @@
    <string notr="true"/>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <layout class="QHBoxLayout" name="horizontalLayout">
+   <layout class="QHBoxLayout" name="horizontalLayout_2">
     <item>
      <widget class="QSplitter" name="splitter">
       <property name="orientation">
@@ -37,46 +37,7 @@
         <enum>QFrame::Raised</enum>
        </property>
        <layout class="QGridLayout" name="gridLayout_2">
-        <item row="0" column="0">
-         <widget class="QLabel" name="label">
-          <property name="font">
-           <font>
-            <family>Segoe UI</family>
-            <pointsize>10</pointsize>
-           </font>
-          </property>
-          <property name="text">
-           <string>Destination</string>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="1">
-         <widget class="QPushButton" name="addDest">
-          <property name="minimumSize">
-           <size>
-            <width>197</width>
-            <height>25</height>
-           </size>
-          </property>
-          <property name="font">
-           <font>
-            <family>Segoe UI</family>
-            <pointsize>10</pointsize>
-            <stylestrategy>PreferDefault</stylestrategy>
-           </font>
-          </property>
-          <property name="statusTip">
-           <string>Just be gentle okay?</string>
-          </property>
-          <property name="whatsThis">
-           <string/>
-          </property>
-          <property name="text">
-           <string>Add</string>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="1">
+        <item row="2" column="1">
          <widget class="QPushButton" name="removeDest">
           <property name="minimumSize">
            <size>
@@ -86,7 +47,7 @@
           </property>
           <property name="font">
            <font>
-            <family>Segoe UI</family>
+            <family>Helvetica</family>
             <pointsize>10</pointsize>
            </font>
           </property>
@@ -98,13 +59,19 @@
           </property>
          </widget>
         </item>
-        <item row="2" column="0" colspan="2">
+        <item row="4" column="0" colspan="2">
          <widget class="QTableWidget" name="tableWidget">
           <property name="minimumSize">
            <size>
             <width>400</width>
             <height>0</height>
            </size>
+          </property>
+          <property name="font">
+           <font>
+            <family>Helvetica</family>
+            <pointsize>10</pointsize>
+           </font>
           </property>
           <property name="statusTip">
            <string>You can drag the edge of this section to close it</string>
@@ -131,6 +98,52 @@
           </column>
          </widget>
         </item>
+        <item row="0" column="1">
+         <widget class="QLabel" name="label_2">
+          <property name="text">
+           <string/>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="0">
+         <widget class="QLabel" name="label">
+          <property name="font">
+           <font>
+            <family>Helvetica</family>
+            <pointsize>14</pointsize>
+           </font>
+          </property>
+          <property name="text">
+           <string>Destination</string>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="0">
+         <widget class="QPushButton" name="addDest">
+          <property name="minimumSize">
+           <size>
+            <width>197</width>
+            <height>25</height>
+           </size>
+          </property>
+          <property name="font">
+           <font>
+            <family>Helvetica</family>
+            <pointsize>10</pointsize>
+            <stylestrategy>PreferDefault</stylestrategy>
+           </font>
+          </property>
+          <property name="statusTip">
+           <string>Just be gentle okay?</string>
+          </property>
+          <property name="whatsThis">
+           <string/>
+          </property>
+          <property name="text">
+           <string>Add</string>
+          </property>
+         </widget>
+        </item>
        </layout>
       </widget>
       <widget class="QFrame" name="frame_2">
@@ -147,20 +160,7 @@
         <enum>QFrame::Raised</enum>
        </property>
        <layout class="QGridLayout" name="gridLayout">
-        <item row="1" column="0">
-         <widget class="QLabel" name="label_4">
-          <property name="font">
-           <font>
-            <family>Segoe UI</family>
-            <pointsize>10</pointsize>
-           </font>
-          </property>
-          <property name="text">
-           <string>Directory</string>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="1">
+        <item row="2" column="1">
          <widget class="QPushButton" name="browseBtn">
           <property name="minimumSize">
            <size>
@@ -170,7 +170,7 @@
           </property>
           <property name="font">
            <font>
-            <family>Segoe UI</family>
+            <family>Helvetica</family>
             <pointsize>10</pointsize>
            </font>
           </property>
@@ -185,7 +185,7 @@
           </property>
          </widget>
         </item>
-        <item row="2" column="1">
+        <item row="3" column="1">
          <widget class="QPushButton" name="unmoveBtn">
           <property name="minimumSize">
            <size>
@@ -195,7 +195,7 @@
           </property>
           <property name="font">
            <font>
-            <family>Segoe UI</family>
+            <family>Helvetica</family>
             <pointsize>10</pointsize>
            </font>
           </property>
@@ -210,7 +210,7 @@
           </property>
          </widget>
         </item>
-        <item row="2" column="0">
+        <item row="3" column="0">
          <widget class="QPushButton" name="checkDeletedBtn">
           <property name="minimumSize">
            <size>
@@ -220,7 +220,7 @@
           </property>
           <property name="font">
            <font>
-            <family>Segoe UI</family>
+            <family>Helvetica</family>
             <pointsize>10</pointsize>
            </font>
           </property>
@@ -235,7 +235,7 @@
           </property>
          </widget>
         </item>
-        <item row="4" column="0" colspan="2">
+        <item row="5" column="0" colspan="2">
          <widget class="QTreeView" name="treeView">
           <property name="minimumSize">
            <size>
@@ -243,16 +243,22 @@
             <height>0</height>
            </size>
           </property>
+          <property name="font">
+           <font>
+            <family>Helvetica</family>
+            <pointsize>10</pointsize>
+           </font>
+          </property>
           <property name="statusTip">
            <string>I promise not to tell anyone</string>
           </property>
          </widget>
         </item>
-        <item row="0" column="0">
+        <item row="2" column="0">
          <widget class="QComboBox" name="comboMode">
           <property name="font">
            <font>
-            <family>Segoe UI</family>
+            <family>Helvetica</family>
             <pointsize>10</pointsize>
            </font>
           </property>
@@ -268,42 +274,73 @@
           </item>
          </widget>
         </item>
+        <item row="1" column="0">
+         <widget class="QLabel" name="label_4">
+          <property name="font">
+           <font>
+            <family>Helvetica</family>
+            <pointsize>14</pointsize>
+           </font>
+          </property>
+          <property name="text">
+           <string>Directory</string>
+          </property>
+         </widget>
+        </item>
        </layout>
       </widget>
-      <widget class="QLabel" name="imageLabel">
+      <widget class="QFrame" name="frame_3">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
          <horstretch>0</horstretch>
          <verstretch>0</verstretch>
         </sizepolicy>
        </property>
-       <property name="minimumSize">
-        <size>
-         <width>200</width>
-         <height>200</height>
-        </size>
+       <property name="frameShape">
+        <enum>QFrame::StyledPanel</enum>
        </property>
-       <property name="maximumSize">
-        <size>
-         <width>1280</width>
-         <height>720</height>
-        </size>
+       <property name="frameShadow">
+        <enum>QFrame::Raised</enum>
        </property>
-       <property name="statusTip">
-        <string>Inazuma god</string>
-       </property>
-       <property name="text">
-        <string/>
-       </property>
-       <property name="pixmap">
-        <pixmap>icons/file-chan.png</pixmap>
-       </property>
-       <property name="scaledContents">
-        <bool>false</bool>
-       </property>
-       <property name="alignment">
-        <set>Qt::AlignCenter</set>
-       </property>
+       <layout class="QHBoxLayout" name="horizontalLayout">
+        <item>
+         <widget class="QLabel" name="imageLabel">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>200</width>
+            <height>200</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>1280</width>
+            <height>720</height>
+           </size>
+          </property>
+          <property name="statusTip">
+           <string>Inazuma god</string>
+          </property>
+          <property name="text">
+           <string/>
+          </property>
+          <property name="pixmap">
+           <pixmap resource="icons.qrc">:/icons/icons/file-chan-border.png</pixmap>
+          </property>
+          <property name="scaledContents">
+           <bool>false</bool>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignCenter</set>
+          </property>
+         </widget>
+        </item>
+       </layout>
       </widget>
      </widget>
     </item>
@@ -314,7 +351,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1141</width>
+     <width>1056</width>
      <height>21</height>
     </rect>
    </property>
@@ -343,6 +380,7 @@
     </property>
     <addaction name="actionDefault"/>
     <addaction name="actionWeeb"/>
+    <addaction name="actionOrange"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuEdit"/>
@@ -378,6 +416,11 @@
   <action name="actionWeeb">
    <property name="text">
     <string>Weeb</string>
+   </property>
+  </action>
+  <action name="actionOrange">
+   <property name="text">
+    <string>Orange</string>
    </property>
   </action>
  </widget>
