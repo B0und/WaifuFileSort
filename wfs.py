@@ -35,6 +35,7 @@ class MainWindow(QtWidgets.QMainWindow):
         app_icon = QtGui.QIcon()
         app_icon.addFile("./icons/waifu_sort.png", QtCore.QSize(256, 256))
         self.setWindowIcon(app_icon)
+        # self.setStyleSheet(pkg_resources.resource_stream(__name__, 'style_anime.css').read())
 
         self.path_hotkey_dict = {}
         self.hotkey_path_dict = {}
@@ -76,6 +77,36 @@ class MainWindow(QtWidgets.QMainWindow):
         self.ui.actionClear_Delete_Folder.triggered.connect(self.clear_folder)
         self.ui.unmoveBtn.clicked.connect(self.undo_cb)
         self.ui.checkDeletedBtn.clicked.connect(self.checkDeletedBtn_cb)
+        self.ui.actionWeeb.triggered.connect(self.setWeebStyle)
+        self.ui.actionDefault.triggered.connect(self.setDefaultStyle)
+        self.ui.comboMode.currentTextChanged.connect(self.changeFileType)
+
+    def setWeebStyle(self):
+        with open("style_anime.css") as f:
+            style_text = f.read()
+            self.setStyleSheet(style_text)
+
+        self.ui.addDest.setText("")
+        self.ui.removeDest.setText("")
+        self.ui.browseBtn.setText("")
+        self.ui.checkDeletedBtn.setText("")
+        self.ui.unmoveBtn.setText("")
+
+    def setDefaultStyle(self):
+        self.setStyleSheet(" ")
+        self.ui.addDest.setText("Add")
+        self.ui.removeDest.setText("Remove")
+        self.ui.browseBtn.setText("Browse")
+        self.ui.checkDeletedBtn.setText("Deleted")
+        self.ui.unmoveBtn.setText("Undo")
+
+    def changeFileType(self):
+        mode = self.ui.comboMode.currentText()
+        if mode == "Files":
+            self.model.setNameFilters(["*.*"])
+
+        elif mode == "Pictures":
+            self.model.setNameFilters(["*.jpg", "*.png", "*.webp", ".JPEG", ".PNG"])
 
     def checkDeletedBtn_cb(self):
         ind = self.ui.treeView.currentIndex()

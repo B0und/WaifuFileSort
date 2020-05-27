@@ -9,7 +9,7 @@ if sys.platform == "win32":
 options = {
     "build_exe": {
         "includes": ["atexit"],
-        "include_files": ["./icons/", "./delete", "icons_rc.py"],
+        "include_files": ["./icons/", "./delete", "icons_rc.py", "style_anime.css"],
     },
 }
 
