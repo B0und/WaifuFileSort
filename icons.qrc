@@ -1,0 +1,27 @@
+<RCC>
+  <qresource prefix="icons">
+    <file>icons/1414340.jpg</file>
+    <file>icons/add.png</file>
+    <file>icons/Browse_button_down.png</file>
+    <file>icons/browse_button_highlight.png</file>
+    <file>icons/browse_buttonup.png</file>
+    <file>icons/Deleted_down.png</file>
+    <file>icons/Deleted_HIghlight.png</file>
+    <file>icons/Deleted_up.png</file>
+    <file>icons/file-chan.png</file>
+    <file>icons/file-chan-border.png</file>
+    <file>icons/GRAD_YEL_DOTS.jpg</file>
+    <file>icons/Norm.png</file>
+    <file>icons/remove.png</file>
+    <file>icons/Remove_button_highlighted_.png</file>
+    <file>icons/remove_pressed.png</file>
+    <file>icons/Test_button_.png</file>
+    <file>icons/Test_button_Tile_.png</file>
+    <file>icons/Test_button_Tile_big_.png</file>
+    <file>icons/Undo_Down.png</file>
+    <file>icons/Undo_Highlight.png</file>
+    <file>icons/Undo_up.png</file>
+    <file>icons/waifu_sort.ico</file>
+    <file>icons/waifu_sort.png</file>
+  </qresource>
+</RCC>

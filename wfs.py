@@ -1,3 +1,6 @@
+import convert_ui_and_qrc_files
+
+from PyQt5.uic import pyuic
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import (
     QShortcut,
@@ -134,7 +137,6 @@ class MainWindow(QtWidgets.QMainWindow):
         if file_path != pathlib.Path(self.delete_folder).resolve():
             self.model.setRootPath(self.delete_folder)
             self.ui.treeView.setRootIndex(self.model.index(self.delete_folder))
-            return
         else:
             self.model.setRootPath(self.current_file_folder)
             self.ui.treeView.setRootIndex(self.model.index(self.current_file_folder))

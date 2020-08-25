@@ -1,0 +1,15 @@
+
+QMainWindow
+{
+background-image: url(:/icons/icons/1414340.jpg);
+}
+
+QSplitter::handle
+{
+    background-color: rgba(0,0,0, 0);
+}
+QMenuBar
+{
+	background-color: rgba(255,255,255,255);
+	border-bottom: 2px solid rgb(200,200,200);
+}
