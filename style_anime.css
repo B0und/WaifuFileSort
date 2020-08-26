@@ -68,6 +68,7 @@
     border-image: url(:/icons/icons/Undo_Highlight.png);
 }
 
+
 #unmoveBtn:pressed
 {
     border-image: url(:/icons/icons/Undo_Down.png);
