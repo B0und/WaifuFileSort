@@ -59,6 +59,6 @@ Originally designed to sort various anime pictures, until I realised you could u
 
 # Shoutout 
 To **Inazuma** for drawing `File-chan`!
-<a href=" https://twitter.com/Ina_den_"> 
 
-Checkout more of his waifus here</a>
+
+<a href=" https://twitter.com/Ina_den_"> Checkout more of his waifus here</a>
