@@ -1,5 +1,6 @@
-import convert_ui_and_qrc_files
+# import convert_ui_and_qrc_files
 
+# pyinstaller wfs.py --onefile -i icons/waifu_sort.ico --add-data="orange.css;." --add-data="style_anime.css;." --add-data="/icons;."
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import (
     QShortcut,
@@ -11,11 +12,9 @@ from PyQt5.QtWidgets import (
 from PyQt5.QtGui import (
     QColor,
     QPalette,
-    QStandardItemModel,
-    QStandardItem,
     QKeySequence,
 )
-from PyQt5.QtCore import Qt, QDir, QItemSelectionModel
+from PyQt5.QtCore import Qt
 from main_ui import Ui_MainWindow
 import sys
 import pathlib
@@ -25,7 +24,6 @@ from send2trash import send2trash
 from functools import partial
 import json
 import os
-import glob
 from PIL import Image
 import imagehash
 

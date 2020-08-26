@@ -8,8 +8,9 @@ if sys.platform == "win32":
 
 options = {
     "build_exe": {
-        "includes": ["atexit"],
-        "include_files": ["./icons/", "./delete", "icons_rc.py", "orange.css", "style_anime.css"],
+        # "includes": ["atexit"],
+        "includes": ["PyQt5", "send2trash", "imagehash"],
+        "include_files": ["./icons/", "icons_rc.py", "orange.css", "style_anime.css"],
     },
 }
 
@@ -17,8 +18,10 @@ executables = [Executable("wfs.py", base=base, icon="./icons/waifu_sort.ico",)]
 
 setup(
     name="WaifuFileSort",
-    version="1.5",
+    version="0.1",
     description="finalfinal",
     options=options,
     executables=executables,
 )
+
+# python setup.py build
