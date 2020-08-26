@@ -1,6 +1,5 @@
 import convert_ui_and_qrc_files
 
-from PyQt5.uic import pyuic
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import (
     QShortcut,
@@ -76,6 +75,8 @@ class MainWindow(QtWidgets.QMainWindow):
         self.undoShortcut = QShortcut(QKeySequence("Ctrl+Z"), self)
         self.undoShortcut.activated.connect(self.undo_cb)
 
+        self.default_palette = QtGui.QGuiApplication.palette()
+
         self.ui.removeDest.clicked.connect(self.remove_dest)
         self.ui.actionAbout.triggered.connect(self.showAboutDialog)
         self.ui.actionSave_Preset.triggered.connect(self.save_preset_cb)
@@ -84,39 +85,70 @@ class MainWindow(QtWidgets.QMainWindow):
         self.ui.unmoveBtn.clicked.connect(self.undo_cb)
         self.ui.checkDeletedBtn.clicked.connect(self.checkDeletedBtn_cb)
         self.ui.actionWeeb.triggered.connect(self.setWeebStyle)
-        self.ui.actionDefault.triggered.connect(self.setDefaultStyle)
+        self.ui.actionLight.triggered.connect(self.setLightStyle)
+        self.ui.actionDark.triggered.connect(self.setDarkStyle)
         self.ui.comboMode.currentTextChanged.connect(self.changeFileType)
         self.ui.actionOrange.triggered.connect(self.setOrangeTheme)
 
-    def setOrangeTheme(self):
-        with open("orange.css") as f:
-            style_text = f.read()
-            self.setStyleSheet(style_text)
+        self.setDarkStyle()
 
+    
+    def addTextToButtons(self):
         self.ui.addDest.setText("Add")
         self.ui.removeDest.setText("Remove")
         self.ui.browseBtn.setText("Browse")
         self.ui.checkDeletedBtn.setText("Deleted")
         self.ui.unmoveBtn.setText("Undo")
 
-    def setWeebStyle(self):
-        with open("style_anime.css") as f:
-            style_text = f.read()
-            self.setStyleSheet(style_text)
-
+    def removeTextFromButtons(self):
         self.ui.addDest.setText("")
         self.ui.removeDest.setText("")
         self.ui.browseBtn.setText("")
         self.ui.checkDeletedBtn.setText("")
         self.ui.unmoveBtn.setText("")
 
-    def setDefaultStyle(self):
+
+    def setOrangeTheme(self):
+        QtGui.QGuiApplication.setPalette(self.default_palette)
+        with open("orange.css") as f:
+            style_text = f.read()
+            self.setStyleSheet(style_text)
+
+        self.addTextToButtons()
+
+    def setWeebStyle(self):
+        QtGui.QGuiApplication.setPalette(self.default_palette)
+        with open("style_anime.css") as f:
+            style_text = f.read()
+            self.setStyleSheet(style_text)
+
+        self.removeTextFromButtons()
+
+    def setLightStyle(self):
+        QtGui.QGuiApplication.setPalette(self.default_palette)
         self.setStyleSheet(" ")
-        self.ui.addDest.setText("Add")
-        self.ui.removeDest.setText("Remove")
-        self.ui.browseBtn.setText("Browse")
-        self.ui.checkDeletedBtn.setText("Deleted")
-        self.ui.unmoveBtn.setText("Undo")
+        self.addTextToButtons()
+
+    def setDarkStyle(self):
+        self.setStyleSheet(" ")
+        self.addTextToButtons()
+
+        dark_palette = QPalette()
+        dark_palette.setColor(QPalette.Window, QColor(53, 53, 53))
+        dark_palette.setColor(QPalette.WindowText, Qt.white)
+        dark_palette.setColor(QPalette.Base, QColor(25, 25, 25))
+        dark_palette.setColor(QPalette.AlternateBase, QColor(53, 53, 53))
+        dark_palette.setColor(QPalette.ToolTipBase, Qt.white)
+        dark_palette.setColor(QPalette.ToolTipText, Qt.white)
+        dark_palette.setColor(QPalette.Text, Qt.white)
+        dark_palette.setColor(QPalette.Button, QColor(53, 53, 53))
+        dark_palette.setColor(QPalette.ButtonText, Qt.white)
+        dark_palette.setColor(QPalette.BrightText, Qt.red)
+        dark_palette.setColor(QPalette.Link, QColor(42, 130, 218))
+        dark_palette.setColor(QPalette.Highlight, QColor(42, 130, 218))
+        dark_palette.setColor(QPalette.HighlightedText, Qt.black)
+        QtGui.QGuiApplication.setPalette(dark_palette)
+
 
     def changeFileType(self):
         mode = self.ui.comboMode.currentText()
@@ -229,7 +261,7 @@ class MainWindow(QtWidgets.QMainWindow):
             self.add_dest_to_table(dest_path=path.name, hotkey=hotkey)
             self.ui.tableWidget.item(row_counter, 0).setToolTip(str(path))
             shortcut = QShortcut(QKeySequence(hotkey), self)
-            shortcut.activated.connect(lambda: self.move_cb(input_path=path))
+            shortcut.activated.connect(lambda mypath=path: self.move_cb(input_path=mypath))
             self._shortcut_list.append(shortcut)
             row_counter += 1
 
@@ -316,7 +348,6 @@ class MainWindow(QtWidgets.QMainWindow):
     def move_cb(self, row=None, input_path=None):
         ind = self.ui.treeView.currentIndex()
         pic_path = self.model.filePath(ind)
-        # pic_path = pathlib.Path(pic_path)
         dest_path = input_path or self.ui.tableWidget.item(row, 0).toolTip()
         dest_path = pathlib.Path(dest_path)
 
@@ -405,13 +436,13 @@ class MainWindow(QtWidgets.QMainWindow):
         self.ui.imageLabel.setAlignment(QtCore.Qt.AlignCenter)
 
 
-def save_json(data, resultNameAndExt):
-    with open(resultNameAndExt, "w") as fp:
+def save_json(data, result_name_with_ext):
+    with open(result_name_with_ext, "w") as fp:
         json.dump(data, fp)
 
 
-def load_json(inputNameAndExt):
-    with open(inputNameAndExt, "r") as fp:
+def load_json(input_name_and_ext):
+    with open(input_name_and_ext, "r") as fp:
         data = json.load(fp)
     return data
 

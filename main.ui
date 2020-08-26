@@ -378,9 +378,10 @@
     <property name="title">
      <string>Style</string>
     </property>
-    <addaction name="actionDefault"/>
-    <addaction name="actionWeeb"/>
+    <addaction name="actionDark"/>
+    <addaction name="actionLight"/>
     <addaction name="actionOrange"/>
+    <addaction name="actionWeeb"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuEdit"/>
@@ -408,9 +409,9 @@
     <string>Clear Delete Folder</string>
    </property>
   </action>
-  <action name="actionDefault">
+  <action name="actionLight">
    <property name="text">
-    <string>Default</string>
+    <string>Light</string>
    </property>
   </action>
   <action name="actionWeeb">
@@ -421,6 +422,11 @@
   <action name="actionOrange">
    <property name="text">
     <string>Orange</string>
+   </property>
+  </action>
+  <action name="actionDark">
+   <property name="text">
+    <string>Dark</string>
    </property>
   </action>
  </widget>
