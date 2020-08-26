@@ -51,7 +51,8 @@ class MainWindow(QtWidgets.QMainWindow):
 
         self.model = QFileSystemModel()
         # self.model.setFilter(QDir.Files)
-        self.model.setNameFilters(["*.jpg", "*.png", "*.webp", ".JPEG", ".PNG"])
+        self.model.setNameFilters(
+            ["*.jpg", "*.png", "*.webp", ".JPEG", ".PNG"])
         self.model.setNameFilterDisables(False)
         self.ui.treeView.setModel(self.model)
         # self.ui.treeView.setRootIndex(self.model.index(p))
@@ -92,7 +93,6 @@ class MainWindow(QtWidgets.QMainWindow):
 
         self.setDarkStyle()
 
-    
     def addTextToButtons(self):
         self.ui.addDest.setText("Add")
         self.ui.removeDest.setText("Remove")
@@ -106,7 +106,6 @@ class MainWindow(QtWidgets.QMainWindow):
         self.ui.browseBtn.setText("")
         self.ui.checkDeletedBtn.setText("")
         self.ui.unmoveBtn.setText("")
-
 
     def setOrangeTheme(self):
         QtGui.QGuiApplication.setPalette(self.default_palette)
@@ -149,14 +148,14 @@ class MainWindow(QtWidgets.QMainWindow):
         dark_palette.setColor(QPalette.HighlightedText, Qt.black)
         QtGui.QGuiApplication.setPalette(dark_palette)
 
-
     def changeFileType(self):
         mode = self.ui.comboMode.currentText()
         if mode == "Files":
             self.model.setNameFilters(["*.*"])
 
         elif mode == "Pictures":
-            self.model.setNameFilters(["*.jpg", "*.png", "*.webp", ".JPEG", ".PNG"])
+            self.model.setNameFilters(
+                ["*.jpg", "*.png", "*.webp", ".JPEG", ".PNG"])
 
     def checkDeletedBtn_cb(self):
         ind = self.ui.treeView.currentIndex()
@@ -171,15 +170,22 @@ class MainWindow(QtWidgets.QMainWindow):
             self.ui.treeView.setRootIndex(self.model.index(self.delete_folder))
         else:
             self.model.setRootPath(self.current_file_folder)
-            self.ui.treeView.setRootIndex(self.model.index(self.current_file_folder))
+            self.ui.treeView.setRootIndex(
+                self.model.index(self.current_file_folder))
 
     def clear_folder(self):
-        p = pathlib.Path(self.delete_folder)
-        for filename in p.glob("*"):
-            send2trash(str(filename))
-        QtWidgets.QMessageBox.about(
-            self, "Delete folder cleared", "Delete folder cleared"
-        )
+        msg = "Are you sure you want to clear folder with deleted files?"
+        reply = QtWidgets.QMessageBox.question(self, 'Message',
+                                               msg, QtWidgets.QMessageBox.Yes,
+                                               QtWidgets.QMessageBox.No)
+
+        if reply == QtWidgets.QMessageBox.Yes:
+            p = pathlib.Path(self.delete_folder)
+            for filename in p.glob("*"):
+                send2trash(str(filename))
+            QtWidgets.QMessageBox.about(
+                self, "Delete folder cleared", "Delete folder cleared"
+            )
 
     def undo_cb(self):
         try:
@@ -195,7 +201,8 @@ class MainWindow(QtWidgets.QMainWindow):
         try:
             shutil.move(pic_path, str(dest_path))
         except shutil.Error:
-            QtWidgets.QMessageBox.warning(self, "Warning", "File already exists")
+            QtWidgets.QMessageBox.warning(
+                self, "Warning", "File already exists")
         except AttributeError:
             return
         except FileNotFoundError:
@@ -261,7 +268,8 @@ class MainWindow(QtWidgets.QMainWindow):
             self.add_dest_to_table(dest_path=path.name, hotkey=hotkey)
             self.ui.tableWidget.item(row_counter, 0).setToolTip(str(path))
             shortcut = QShortcut(QKeySequence(hotkey), self)
-            shortcut.activated.connect(lambda mypath=path: self.move_cb(input_path=mypath))
+            shortcut.activated.connect(
+                lambda mypath=path: self.move_cb(input_path=mypath))
             self._shortcut_list.append(shortcut)
             row_counter += 1
 
@@ -355,7 +363,8 @@ class MainWindow(QtWidgets.QMainWindow):
             try:
                 shutil.move(pic_path, str(dest_path))
             except shutil.Error:
-                QtWidgets.QMessageBox.warning(self, "Warning", "File already exists")
+                QtWidgets.QMessageBox.warning(
+                    self, "Warning", "File already exists")
                 return
             self.undo_list.append((pic_path, str(dest_path)))
         else:
