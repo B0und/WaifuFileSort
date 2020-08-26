@@ -18,10 +18,12 @@ executables = [Executable("wfs.py", base=base, icon="./icons/waifu_sort.ico",)]
 
 setup(
     name="WaifuFileSort",
-    version="0.1",
+    version="0.1.1",
     description="finalfinal",
     options=options,
     executables=executables,
 )
 
 # python setup.py build
+
+# https://stackoverflow.com/questions/41994485/how-to-fix-could-not-find-or-load-the-qt-platform-plugin-windows-while-using-m
