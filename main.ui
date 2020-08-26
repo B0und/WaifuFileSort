@@ -283,7 +283,7 @@
            </font>
           </property>
           <property name="text">
-           <string>Directory</string>
+           <string>Source Directory</string>
           </property>
          </widget>
         </item>
@@ -373,6 +373,8 @@
      <string>Edit</string>
     </property>
     <addaction name="actionClear_Delete_Folder"/>
+    <addaction name="actionRemove_Duplicates"/>
+    <addaction name="actionRemove_Duplicates_Recursively"/>
    </widget>
    <widget class="QMenu" name="menuStyle">
     <property name="title">
@@ -427,6 +429,16 @@
   <action name="actionDark">
    <property name="text">
     <string>Dark</string>
+   </property>
+  </action>
+  <action name="actionRemove_Duplicates">
+   <property name="text">
+    <string>Remove Source Duplicates</string>
+   </property>
+  </action>
+  <action name="actionRemove_Duplicates_Recursively">
+   <property name="text">
+    <string>Remove Duplicates Recursively</string>
    </property>
   </action>
  </widget>

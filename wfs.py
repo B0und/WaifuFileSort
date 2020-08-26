@@ -25,6 +25,12 @@ from send2trash import send2trash
 from functools import partial
 import json
 import os
+import glob
+from PIL import Image
+import imagehash
+
+if not os.path.exists('delete'):
+    os.makedirs('delete')
 
 
 class MainWindow(QtWidgets.QMainWindow):
@@ -33,7 +39,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.setAttribute(QtCore.Qt.WA_DeleteOnClose)
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
-        self.setWindowTitle("Weeb File Sort")
+        self.setWindowTitle("Waifu File Sort")
         app_icon = QtGui.QIcon()
         app_icon.addFile("./icons/waifu_sort.png", QtCore.QSize(256, 256))
         self.setWindowIcon(app_icon)
@@ -51,8 +57,9 @@ class MainWindow(QtWidgets.QMainWindow):
 
         self.model = QFileSystemModel()
         # self.model.setFilter(QDir.Files)
+        self.pic_ext_list = [".jpg", ".png", ".webp", ".JPEG", ".PNG"]
         self.model.setNameFilters(
-            ["*.jpg", "*.png", "*.webp", ".JPEG", ".PNG"])
+            ["*.jpg", "*.png", "*.webp", "*.JPEG", "*.PNG"])
         self.model.setNameFilterDisables(False)
         self.ui.treeView.setModel(self.model)
         # self.ui.treeView.setRootIndex(self.model.index(p))
@@ -90,8 +97,61 @@ class MainWindow(QtWidgets.QMainWindow):
         self.ui.actionDark.triggered.connect(self.setDarkStyle)
         self.ui.comboMode.currentTextChanged.connect(self.changeFileType)
         self.ui.actionOrange.triggered.connect(self.setOrangeTheme)
+        self.ui.actionRemove_Duplicates.triggered.connect(
+            self.remove_duplicate_pictures)
+        self.ui.actionRemove_Duplicates_Recursively.triggered.connect(
+            partial(self.remove_duplicate_pictures, recursive_delete=True))
 
         self.setDarkStyle()
+
+    def remove_duplicate_pictures(self, recursive_delete=False):
+        root_path = self.model.rootPath()
+        if root_path == ".":
+            return  # if source destination wasnt chosen
+
+        # check for missclick
+        msg = "Are you sure you want to delete duplicate pictures from source folder?"
+        reply = QtWidgets.QMessageBox.question(self, 'Message',
+                                               msg, QtWidgets.QMessageBox.Yes,
+                                               QtWidgets.QMessageBox.No)
+
+        if reply != QtWidgets.QMessageBox.Yes:
+            return
+
+        # gather pictures from root path
+        all_pictures = []
+        if recursive_delete:  # recursive search
+            for path in pathlib.Path(root_path).glob(r'**/*'):
+                if path.suffix in self.pic_ext_list:
+                    all_pictures.append(path)
+
+        else:  # non recursive
+            for path in pathlib.Path(root_path).glob(r'*'):
+                if path.suffix in self.pic_ext_list:
+                    all_pictures.append(path)
+
+        # add phash of picture to dictionary, replace with shorter filename if same hash found
+        result_pics = {}
+        for path in all_pictures:
+            with Image.open(path) as img:
+                img_hash = str(imagehash.phash(img))
+                if img_hash in result_pics:
+                    dict_fname = result_pics[img_hash].stem
+                    if len(path.stem) < len(dict_fname):
+                        result_pics[img_hash] = path
+                else:
+                    result_pics[img_hash] = path
+
+        result_pics = {value: key for key, value in result_pics.items()}
+        print(result_pics)
+        for path in all_pictures:
+            if path not in result_pics:
+                try:
+                    shutil.move(str(path), self.delete_folder)
+                except shutil.Error:
+                    send2trash(str(path))
+
+        QtWidgets.QMessageBox.about(self, "Info", "Done")
 
     def addTextToButtons(self):
         self.ui.addDest.setText("Add")
@@ -284,13 +344,13 @@ class MainWindow(QtWidgets.QMainWindow):
         # items = self.ui.tableWidget.selectedItems()
 
         current_row = self.ui.tableWidget.currentRow()
-        print(f"{current_row=}")
+        # print(f"{current_row=}")
         try:
             dest_path = self.ui.tableWidget.item(current_row, 0).toolTip()
         except AttributeError:
             return
         hotkey = self.ui.tableWidget.cellWidget(current_row, 2).text()
-        print("deleting hotkey: ", hotkey)
+        # print("deleting hotkey: ", hotkey)
         self.delete_hotkey(hotkey)
         try:
             del self.path_hotkey_dict[dest_path]
@@ -306,9 +366,9 @@ class MainWindow(QtWidgets.QMainWindow):
     def delete_hotkey(self, name):
         for shortcut in self._shortcut_list:
             key_name = shortcut.key().toString()
-            print("k-name: ", key_name)
+            # print("k-name: ", key_name)
             if key_name == name.upper():
-                print("DELETED hotkey: ", name)
+                # print("DELETED hotkey: ", name)
                 shortcut.setEnabled(False)
 
     def add_dest_to_table(self, dest_path=None, hotkey=None):
@@ -402,7 +462,7 @@ class MainWindow(QtWidgets.QMainWindow):
             hotkey_line.clearFocus()
 
     def browse_dest_click(self, caller_row):
-        print(caller_row)
+        # print(caller_row)
         dialog = QFileDialog()
         folder_path = dialog.getExistingDirectory(None, "Select Folder")
         p = pathlib.Path(folder_path)
@@ -428,8 +488,8 @@ class MainWindow(QtWidgets.QMainWindow):
         # keep track of current folder for check button return location
         path_to_current_folder = pathlib.Path(file_path).parents[0]
         # print(f"{path_to_current_folder=}")
-        print(path_to_current_folder.resolve())
-        print(pathlib.Path(self.delete_folder).resolve())
+        # print(path_to_current_folder.resolve())
+        # print(pathlib.Path(self.delete_folder).resolve())
         if str(path_to_current_folder.resolve()) != str(
             pathlib.Path(self.delete_folder).resolve()
         ):
@@ -472,25 +532,7 @@ def find_data_file(folder, filename=None):
 
 if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
-
     app.setStyle("Fusion")
-    # Now use a palette to switch to dark colors:
-    # palette = QPalette()
-    # palette.setColor(QPalette.Window, QColor(53, 53, 53))
-    # palette.setColor(QPalette.WindowText, Qt.white)
-    # palette.setColor(QPalette.Base, QColor(25, 25, 25))
-    # palette.setColor(QPalette.AlternateBase, QColor(53, 53, 53))
-    # palette.setColor(QPalette.ToolTipBase, Qt.white)
-    # palette.setColor(QPalette.ToolTipText, Qt.white)
-    # palette.setColor(QPalette.Text, Qt.white)
-    # palette.setColor(QPalette.Button, QColor(53, 53, 53))
-    # palette.setColor(QPalette.ButtonText, Qt.white)
-    # palette.setColor(QPalette.BrightText, Qt.red)
-    # palette.setColor(QPalette.Link, QColor(42, 130, 218))
-    # palette.setColor(QPalette.Highlight, QColor(42, 130, 218))
-    # palette.setColor(QPalette.HighlightedText, Qt.black)
-    # app.setPalette(palette)
-
     w = MainWindow()
     # w.setWindowFlags(QtCore.Qt.FramelessWindowHint)
     w.show()
