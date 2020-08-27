@@ -1,31 +1,24 @@
-# import convert_ui_and_qrc_files
-
-# pyinstaller wfs.py --onefile -i icons/waifu_sort.ico --add-data="orange.css;." --add-data="style_anime.css;." --add-data="/icons;."
-from PyQt5 import QtCore, QtGui, QtWidgets
-from PyQt5.QtWidgets import (
-    QShortcut,
-    QFileSystemModel,
-    QAbstractItemView,
-    QFileDialog,
-    QDialog,
-)
-from PyQt5.QtGui import (
-    QColor,
-    QPalette,
-    QKeySequence,
-)
-from PyQt5.QtCore import Qt
-from main_ui import Ui_MainWindow
-import sys
-import pathlib
-from pprint import pprint
-import shutil
-from send2trash import send2trash
-from functools import partial
+import convert_ui_and_qrc_files
 import json
 import os
-from PIL import Image
+import pathlib
+import shutil
+import sys
+from functools import partial
+from pprint import pprint
+
 import imagehash
+from PIL import Image
+from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5.QtCore import Qt
+from PyQt5.QtGui import QColor, QKeySequence, QPalette
+from PyQt5.QtWidgets import (QAbstractItemView, QDialog, QFileDialog,
+                             QFileSystemModel, QShortcut)
+from send2trash import send2trash
+
+
+from main_ui import Ui_MainWindow
+from vers import get_version
 
 if not os.path.exists('delete'):
     os.makedirs('delete')
@@ -37,42 +30,38 @@ class MainWindow(QtWidgets.QMainWindow):
         self.setAttribute(QtCore.Qt.WA_DeleteOnClose)
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
+
+        # style window 
         self.setWindowTitle("Waifu File Sort")
         app_icon = QtGui.QIcon()
         app_icon.addFile("./icons/waifu_sort.png", QtCore.QSize(256, 256))
         self.setWindowIcon(app_icon)
 
-        with open("orange.css") as f:
-            style_text = f.read()
-            self.setStyleSheet(style_text)
-
+        # store important data
         self.path_hotkey_dict = {}
         self.hotkey_path_dict = {}
         self._shortcut_list = []
         self.undo_list = []
         self.delete_folder = str(pathlib.Path(find_data_file("delete")))
         self.current_file_folder = ""
-
-        self.model = QFileSystemModel()
-        # self.model.setFilter(QDir.Files)
         self.pic_ext_list = [".jpg", ".png", ".webp", ".JPEG", ".PNG"]
+        self.default_palette = QtGui.QGuiApplication.palette()
+
+        # initialize source directory
+        self.model = QFileSystemModel()
         self.model.setNameFilters(
             ["*.jpg", "*.png", "*.webp", "*.JPEG", "*.PNG"])
         self.model.setNameFilterDisables(False)
         self.ui.treeView.setModel(self.model)
-        # self.ui.treeView.setRootIndex(self.model.index(p))
         self.ui.treeView.setSelectionMode(QAbstractItemView.SingleSelection)
         self.ui.tableWidget.setSelectionMode(
             QtWidgets.QAbstractItemView.SingleSelection
         )
-
         self.ui.treeView.selectionModel().selectionChanged.connect(
-            self.updateImageLabel
+            self.update_image_label
         )
 
-        self.ui.browseBtn.clicked.connect(self.browse_source_click)
-        self.ui.addDest.clicked.connect(self.add_dest_to_table)
-
+        # hotkeys
         self.delShortcut = QShortcut(QKeySequence("Delete"), self)
         self.delShortcut.activated.connect(
             partial(self.move_cb, None, self.delete_folder)
@@ -81,26 +70,28 @@ class MainWindow(QtWidgets.QMainWindow):
         self.undoShortcut = QShortcut(QKeySequence("Ctrl+Z"), self)
         self.undoShortcut.activated.connect(self.undo_cb)
 
-        self.default_palette = QtGui.QGuiApplication.palette()
 
-        self.ui.removeDest.clicked.connect(self.remove_dest)
-        self.ui.actionAbout.triggered.connect(self.showAboutDialog)
+        # callbacks init
+        self.ui.browseBtn.clicked.connect(self.browse_source_click)
+        self.ui.addDest.clicked.connect(self.add_dest_to_table)
+        self.ui.removeDest.clicked.connect(self.remove_destination)
+        self.ui.actionAbout.triggered.connect(self.show_about_dialog)
         self.ui.actionSave_Preset.triggered.connect(self.save_preset_cb)
         self.ui.actionLoad_Preset.triggered.connect(self.load_preset_cb)
-        self.ui.actionClear_Delete_Folder.triggered.connect(self.clear_folder)
+        self.ui.actionClear_Delete_Folder.triggered.connect(self.clear_deleted_folder)
         self.ui.unmoveBtn.clicked.connect(self.undo_cb)
-        self.ui.checkDeletedBtn.clicked.connect(self.checkDeletedBtn_cb)
-        self.ui.actionWeeb.triggered.connect(self.setWeebStyle)
-        self.ui.actionLight.triggered.connect(self.setLightStyle)
-        self.ui.actionDark.triggered.connect(self.setDarkStyle)
-        self.ui.comboMode.currentTextChanged.connect(self.changeFileType)
-        self.ui.actionOrange.triggered.connect(self.setOrangeTheme)
+        self.ui.checkDeletedBtn.clicked.connect(self.check_deleted_btn_cb)
+        self.ui.actionFancy.triggered.connect(self.set_fancy_style)
+        self.ui.actionLight.triggered.connect(self.set_light_style)
+        self.ui.actionDark.triggered.connect(self.set_dark_style)
+        self.ui.comboMode.currentTextChanged.connect(self.change_file_type)
+        self.ui.actionOrange.triggered.connect(self.set_orange_style)
         self.ui.actionRemove_Duplicates.triggered.connect(
             self.remove_duplicate_pictures)
         self.ui.actionRemove_Duplicates_Recursively.triggered.connect(
             partial(self.remove_duplicate_pictures, recursive_delete=True))
 
-        self.setDarkStyle()
+        self.set_dark_style()
 
     def remove_duplicate_pictures(self, recursive_delete=False):
         root_path = self.model.rootPath()
@@ -108,7 +99,7 @@ class MainWindow(QtWidgets.QMainWindow):
             return  # if source destination wasnt chosen
 
         # check for missclick
-        msg = "Are you sure you want to delete duplicate pictures from source folder?"
+        msg = "Are you sure you want to delete (trash bin) duplicate pictures from source folder?"
         reply = QtWidgets.QMessageBox.question(self, 'Message',
                                                msg, QtWidgets.QMessageBox.Yes,
                                                QtWidgets.QMessageBox.No)
@@ -141,7 +132,7 @@ class MainWindow(QtWidgets.QMainWindow):
                     result_pics[img_hash] = path
 
         result_pics = {value: key for key, value in result_pics.items()}
-        print(result_pics)
+        # delete all pictures that are not in a result_pics dict
         for path in all_pictures:
             if path not in result_pics:
                 try:
@@ -151,44 +142,44 @@ class MainWindow(QtWidgets.QMainWindow):
 
         QtWidgets.QMessageBox.about(self, "Info", "Done")
 
-    def addTextToButtons(self):
+    def add_text_to_buttons(self):
         self.ui.addDest.setText("Add")
         self.ui.removeDest.setText("Remove")
         self.ui.browseBtn.setText("Browse")
         self.ui.checkDeletedBtn.setText("Deleted")
         self.ui.unmoveBtn.setText("Undo")
 
-    def removeTextFromButtons(self):
+    def remove_text_from_buttons(self):
         self.ui.addDest.setText("")
         self.ui.removeDest.setText("")
         self.ui.browseBtn.setText("")
         self.ui.checkDeletedBtn.setText("")
         self.ui.unmoveBtn.setText("")
 
-    def setOrangeTheme(self):
+    def set_orange_style(self):
         QtGui.QGuiApplication.setPalette(self.default_palette)
-        with open("orange.css") as f:
+        with open("./styles/orange.css") as f:
             style_text = f.read()
             self.setStyleSheet(style_text)
 
-        self.addTextToButtons()
+        self.add_text_to_buttons()
 
-    def setWeebStyle(self):
+    def set_fancy_style(self):
         QtGui.QGuiApplication.setPalette(self.default_palette)
-        with open("style_anime.css") as f:
+        with open("./styles/fancy.css") as f:
             style_text = f.read()
             self.setStyleSheet(style_text)
 
-        self.removeTextFromButtons()
+        self.remove_text_from_buttons()
 
-    def setLightStyle(self):
+    def set_light_style(self):
         QtGui.QGuiApplication.setPalette(self.default_palette)
         self.setStyleSheet(" ")
-        self.addTextToButtons()
+        self.add_text_to_buttons()
 
-    def setDarkStyle(self):
+    def set_dark_style(self):
         self.setStyleSheet(" ")
-        self.addTextToButtons()
+        self.add_text_to_buttons()
 
         dark_palette = QPalette()
         dark_palette.setColor(QPalette.Window, QColor(53, 53, 53))
@@ -206,7 +197,10 @@ class MainWindow(QtWidgets.QMainWindow):
         dark_palette.setColor(QPalette.HighlightedText, Qt.black)
         QtGui.QGuiApplication.setPalette(dark_palette)
 
-    def changeFileType(self):
+    def change_file_type(self):
+        """
+        Change source directory display between pictures and files
+        """
         mode = self.ui.comboMode.currentText()
         if mode == "Files":
             self.model.setNameFilters(["*.*"])
@@ -215,7 +209,12 @@ class MainWindow(QtWidgets.QMainWindow):
             self.model.setNameFilters(
                 ["*.jpg", "*.png", "*.webp", ".JPEG", ".PNG"])
 
-    def checkDeletedBtn_cb(self):
+    def check_deleted_btn_cb(self):
+        """
+        This is supposed to change model view to the deleted folder,
+        and second press is supposed to bring you back to the previous 
+        folder, but it doesnt work if you dont select an image in deleted folder.
+        """
         ind = self.ui.treeView.currentIndex()
         file_path = self.model.filePath(ind)
         try:
@@ -231,7 +230,7 @@ class MainWindow(QtWidgets.QMainWindow):
             self.ui.treeView.setRootIndex(
                 self.model.index(self.current_file_folder))
 
-    def clear_folder(self):
+    def clear_deleted_folder(self):
         msg = "Are you sure you want to clear folder with deleted files?"
         reply = QtWidgets.QMessageBox.question(self, 'Message',
                                                msg, QtWidgets.QMessageBox.Yes,
@@ -246,6 +245,9 @@ class MainWindow(QtWidgets.QMainWindow):
             )
 
     def undo_cb(self):
+        """
+        Store actions in a list, revert them 1 by 1
+        """
         try:
             last_operation = self.undo_list[-1]
         except IndexError:
@@ -268,6 +270,9 @@ class MainWindow(QtWidgets.QMainWindow):
         del self.undo_list[-1]
 
     def load_preset_cb(self):
+        """
+        Load user settings from file
+        """
         dialog = QFileDialog()
         dialog.setFilter(dialog.filter() | QtCore.QDir.Hidden)
         dialog.setDefaultSuffix("json")
@@ -288,6 +293,9 @@ class MainWindow(QtWidgets.QMainWindow):
             print("Cancelled")
 
     def save_preset_cb(self):
+        """
+        Save user settings to file
+        """
         dialog = QFileDialog()
         dialog.setFilter(dialog.filter() | QtCore.QDir.Hidden)
         dialog.setDefaultSuffix("json")
@@ -302,18 +310,18 @@ class MainWindow(QtWidgets.QMainWindow):
         else:
             print("Cancelled")
 
-    def showAboutDialog(self):
+    def show_about_dialog(self):
         text = (
             "<center>"
             "<h1>Waifu File Sort</h1>"
             "&#8291;"
             "</center>"
-            "<p>Version 1.5.0<br/>"
+            f"<p>Version {get_version()}<br/>"
         )
         QtWidgets.QMessageBox.about(self, "About Waifu File Sort", text)
 
     def restore_table_from_dict(self):
-        self.clearTableWidget()
+        self.clear_table_widget()
         row_counter = 0
 
         for shortcut in self._shortcut_list:
@@ -331,15 +339,14 @@ class MainWindow(QtWidgets.QMainWindow):
             self._shortcut_list.append(shortcut)
             row_counter += 1
 
-    def clearTableWidget(self):
+    def clear_table_widget(self):
         self.ui.tableWidget.clearContents()
         self.ui.tableWidget.setRowCount(0)
 
-    def remove_dest(self):
+    def remove_destination(self):
         # get selected row or return
         # delete info from both dicts
         # reconstruct table widget from dict
-        # items = self.ui.tableWidget.selectedItems()
 
         current_row = self.ui.tableWidget.currentRow()
         # print(f"{current_row=}")
@@ -479,15 +486,12 @@ class MainWindow(QtWidgets.QMainWindow):
             self.model.setRootPath(folder_path)
             self.ui.treeView.setRootIndex(self.model.index(folder_path))
 
-    def updateImageLabel(self):
+    def update_image_label(self):
         ind = self.ui.treeView.currentIndex()
         file_path = self.model.filePath(ind)
 
         # keep track of current folder for check button return location
         path_to_current_folder = pathlib.Path(file_path).parents[0]
-        # print(f"{path_to_current_folder=}")
-        # print(path_to_current_folder.resolve())
-        # print(pathlib.Path(self.delete_folder).resolve())
         if str(path_to_current_folder.resolve()) != str(
             pathlib.Path(self.delete_folder).resolve()
         ):
@@ -532,6 +536,5 @@ if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
     app.setStyle("Fusion")
     w = MainWindow()
-    # w.setWindowFlags(QtCore.Qt.FramelessWindowHint)
     w.show()
     sys.exit(app.exec_())

@@ -114,7 +114,7 @@
            </font>
           </property>
           <property name="text">
-           <string>Destination</string>
+           <string>Destination Folders</string>
           </property>
          </widget>
         </item>
@@ -383,7 +383,7 @@
     <addaction name="actionDark"/>
     <addaction name="actionLight"/>
     <addaction name="actionOrange"/>
-    <addaction name="actionWeeb"/>
+    <addaction name="actionFancy"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuEdit"/>
@@ -416,9 +416,9 @@
     <string>Light</string>
    </property>
   </action>
-  <action name="actionWeeb">
+  <action name="actionFancy">
    <property name="text">
-    <string>Weeb</string>
+    <string>Fancy</string>
    </property>
   </action>
   <action name="actionOrange">

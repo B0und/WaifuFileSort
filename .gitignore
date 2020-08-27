@@ -5,3 +5,4 @@ main_ui.py
 delete/
 build/
 *.7z
+dists/

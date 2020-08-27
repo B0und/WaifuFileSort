@@ -1,5 +1,7 @@
 import sys
 from cx_Freeze import setup, Executable
+from vers import get_version
+
 
 base = None
 if sys.platform == "win32":
@@ -18,7 +20,7 @@ executables = [Executable("wfs.py", base=base, icon="./icons/waifu_sort.ico",)]
 
 setup(
     name="WaifuFileSort",
-    version="0.1.1",
+    version=f"{get_version()}",
     description="finalfinal",
     options=options,
     executables=executables,
