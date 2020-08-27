@@ -3,7 +3,7 @@
 
 <h1 align="center"> Waifu File Sort </h1> <br>
 
-Originally designed to sort various anime pictures, until I realised you could use it for any files.
+Originally designed to sort through various anime pictures, until I realised you could use it for **any** files, but the project name will stay the same.
 
 <p align="center">
   ack
