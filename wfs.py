@@ -1,4 +1,4 @@
-import convert_ui_and_qrc_files
+# import convert_ui_and_qrc_files
 import json
 import os
 import pathlib

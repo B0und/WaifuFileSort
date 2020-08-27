@@ -12,7 +12,7 @@ options = {
     "build_exe": {
         # "includes": ["atexit"],
         "includes": ["PyQt5", "send2trash", "imagehash"],
-        "include_files": ["./icons/", "icons_rc.py", "orange.css", "style_anime.css"],
+        "include_files": ["./icons/", "icons_rc.py", "./styles/"],
     },
 }
 
