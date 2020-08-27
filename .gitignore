@@ -4,3 +4,4 @@ icons_rc.py
 main_ui.py
 delete/
 build/
+*.7z
