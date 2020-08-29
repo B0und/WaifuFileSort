@@ -435,7 +435,7 @@ class MainWindow(QtWidgets.QMainWindow):
         else:
             # notify user
             QtWidgets.QMessageBox.warning(
-                self, "Warning", "Destination path doesnt exist"
+                self, "Warning", "Press Browse to add destination folder"
             )
 
     def hotkey_line_text_changed_cb(self, hotkey_line, row_ind):
@@ -443,7 +443,7 @@ class MainWindow(QtWidgets.QMainWindow):
         path = self.ui.tableWidget.item(row_ind, 0).toolTip()
         if not path and len(hotkey) > 0:
             QtWidgets.QMessageBox.warning(
-                self, "Warning", "Destination path doesnt exist"
+                self, "Warning", "Press Browse to add destination folder, add hotkey after"
             )
             hotkey_line.clear()
             hotkey_line.clearFocus()
@@ -491,7 +491,11 @@ class MainWindow(QtWidgets.QMainWindow):
         file_path = self.model.filePath(ind)
 
         # keep track of current folder for check button return location
-        path_to_current_folder = pathlib.Path(file_path).parents[0]
+        try:
+            path_to_current_folder = pathlib.Path(file_path).parents[0]
+        except IndexError:
+            return # fix click on C drive crash
+
         if str(path_to_current_folder.resolve()) != str(
             pathlib.Path(self.delete_folder).resolve()
         ):
